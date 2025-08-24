@@ -8,6 +8,8 @@ import { useWallet } from '../contexts/walletContext';
 import { CgArrowsExchange } from "react-icons/cg";
 import { Loader } from 'lucide-react';
 import { Coins } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Explore = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -134,20 +136,43 @@ useEffect(() => {
     }
   };
 
-  const handleBuyNow = async(id) => {
-    try {
-      const tx = await contract.purchaseContent(id);
-      await tx.wait();
-      alert("Purchased successfully, you may have to refresh your page");
-      // Refresh access map after purchase
-      const hasAccess = await contract.hasAccess(id);
-      setAccessMap(prev => ({...prev, [id]: hasAccess}));
-    } catch (error) {
-      console.error("Purchase failed:", error);
-      alert("Purchase failed. Please try again.");
-    }
-    setShowModal(false);
-  };
+  // const handleBuyNow = async(id) => {
+  //   try {
+  //     const tx = await contract.purchaseContent(id);
+  //     await tx.wait();
+  //     alert("Purchased successfully, you may have to refresh your page");
+  //     // Refresh access map after purchase
+  //     const hasAccess = await contract.hasAccess(id);
+  //     setAccessMap(prev => ({...prev, [id]: hasAccess}));
+  //   } catch (error) {
+  //     console.error("Purchase failed:", error);
+  //     alert("Purchase failed. Please try again.");
+  //   }
+  //   setShowModal(false);
+  // };
+
+  const handleBuyNow = async (id) => {
+  try {
+    const tx = await contract.purchaseContent(id);
+    await tx.wait();
+
+    // succ..
+    toast.success("Purchased successfully..");
+
+    // Refresh access map after purchase
+    const hasAccess = await contract.hasAccess(id);
+    setAccessMap((prev) => ({ ...prev, [id]: hasAccess }));
+  } catch (error) {
+    console.error("Purchase failed:", error);
+
+    //error
+    toast.error("Purchase failed ❌ Please try again.");
+  }
+
+  setShowModal(false);
+};
+
+
 
   const handleExchange = async(id) => {
     try {
@@ -656,7 +681,7 @@ useEffect(() => {
 
         {/* TOPIC INPUT SECTION WITH RESULT SHOWCASING */}
         {/* Topic Input Section */}
-        <div className="fixed top-6 right-6 bottom-6 w-80 bg-gray-800 p-6 rounded-xl transition-all duration-300 overflow-y-auto">
+        <div className="fixed top-21 right-6 bottom-6 w-80 bg-gray-800 p-6 rounded-xl transition-all duration-300 overflow-y-auto">
           <h3 className="text-xl font-semibold mb-4 sticky top-0 bg-gray-800 py-2">
             {!showResults ? 'Match Content' : 'Analysis Results'}
           </h3>
@@ -787,6 +812,7 @@ useEffect(() => {
           )}
         </div>
       </div>
+      <ToastContainer position="top-center"  autoClose={3000} />
     </div>
   );
 };

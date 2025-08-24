@@ -239,7 +239,12 @@ import { Coins, X, Menu, Wallet, LogOut, User } from "lucide-react";
 import { IoIosNotifications } from "react-icons/io";
 import Noti from "./Noti"; 
 import icon from '../assets/icon.png';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
+
 const Navbar = () => {
+  const notify = () => toast("Metamask connected seccessfully! ");
   const [isAnimating, setIsAnimating] = useState(false);
   const [previousBalance, setPreviousBalance] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -311,13 +316,21 @@ useEffect(() => {
     }
   }, [balance, previousBalance]);
 
-  const handleWalletClick = async () => {
-    if (isConnected) {
-      handleDisconnect();
-    } else {
+  
+ const handleWalletClick = async () => {
+  if (isConnected) {
+    handleDisconnect();
+    toast.info("Wallet disconnected");
+  } else {
+    try {
       await connectWallet();
+      toast.success("Metamask connected successfully!");
+    } catch (error) {
+      toast.error("Failed to connect wallet ❌");
     }
-  };
+  }
+};
+
 
   const toggleNotifications = () => setShowNotifications(!showNotifications);
 
@@ -330,7 +343,7 @@ useEffect(() => {
 
   return (
     <>
-      <nav className="bg-gradient-to-r from-blue-800 via-indigo-900 to-purple-800 shadow-lg px-6 py-4 flex justify-between items-center relative z-50">
+      <nav className="sticky top-0 z-50 bg-gradient-to-r from-blue-800 via-indigo-900 to-purple-800 shadow-lg px-6 py-4 flex justify-between items-center ">
         {/* Logo */}
         <div className="flex items-center space-x-2 cursor-pointer 
           transition-transform duration-300 hover:scale-110">
@@ -358,7 +371,7 @@ useEffect(() => {
             </span>
           </div>
 
-          <button onClick={handleWalletClick} className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-full shadow-md px-4 py-2 transition-transform transform hover:scale-105 flex items-center space-x-2">
+          <button onClick={handleWalletClick } className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-full shadow-md px-4 py-2 transition-transform transform hover:scale-105 flex items-center space-x-2">
             {isConnected ? (
               <>
                 <LogOut size={18} />
@@ -458,6 +471,7 @@ useEffect(() => {
         notifications={notifications}
         setNotifications={setNotifications}
       />
+      <ToastContainer position="top-center"  autoClose={3000} />
     </>
   );
 };
